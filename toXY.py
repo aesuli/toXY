@@ -151,6 +151,10 @@ class ToXYEffect(inkex.Effect):
             inkex.utils.debug("No paths found.")
             return
 
+        # remove duplicate points
+        for path_id, coordinates in points.items():
+            points[path_id] = set(coordinates)
+
         #boundaries
         xmin = min([point[0] for pointset in points.values() for point in pointset])
         ymin = min([point[1] for pointset in points.values() for point in pointset])
@@ -158,11 +162,23 @@ class ToXYEffect(inkex.Effect):
         xdelta = max([point[0] for pointset in points.values() for point in pointset])-xmin
         ydelta = max([point[1] for pointset in points.values() for point in pointset])-ymin
         
-        #converting coordinates writing table
-        table = "pathId x y\n"
-        for id in points.keys():
-            points[id] = [((((x-xmin)/xdelta)*xrange)+self.options.xmin,(((y-ymin)/ydelta)*yrange)+self.options.ymin) for (x,y) in points[id]]
-            table += "\n".join(['{0} {1:4g} {2:4g}'.format(id,x,y) for (x,y) in points[id]])
+        # converting coordinates writing table
+        table = "pathId idx x y\n"
+        for id in list(points.keys()):
+            points[id] = [
+                (
+                    (((x - xmin) / xdelta) * xrange) + self.options.xmin,
+                    (((y - ymin) / ydelta) * yrange) + self.options.ymin,
+                )
+                for (x, y) in points[id]
+            ]
+            table += "\n".join(
+                [f"{id} {idx} {x:4g} {y:4g}" for idx, (x, y) in enumerate(points[id])]
+            )
+            center_x = sum(x for (x, y) in points[id]) / len(points[id])
+            center_y = sum(y for (x, y) in points[id]) / len(points[id])
+            table += f"\n{id} center {center_x:4g} {center_y:4g}"
+
             table += "\n"
 
         #output
