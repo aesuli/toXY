@@ -52,7 +52,9 @@ Run the toXY plugin from the Extensions, Generate from Path menus.
 
 ![](https://github.com/aesuli/toXY/blob/main/PdfConvert5.png?raw=true)
 
-Fill the lower left corner and upper right corner appropriately, click Apply.
+Set the proper values for the lower left corner and upper right corner to match the bounds of the curves you want to convert into numbers.
+Click Apply.
+
 ![](https://github.com/aesuli/toXY/blob/main/PdfConvert6.png?raw=true)
 
 A very long text box will appear below the graph. Each line reports the X and Y coordinates of a point (adjusted to the lower and upper corner coordinates you entered) and to which curve it belongs. Copy and paste it wherever you like.
