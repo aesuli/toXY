@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 
-import sys
-print(sys.path)
-
+import pathlib
+from lxml import etree
 import inkex
-import cubicsuperpath
-import simpletransform
-import simplestyle
+from inkex.transforms import Transform
+from inkex.paths import Path
 
 
 """ Inkscape extension that extracts XY coordinates of points defining selected paths. """
@@ -16,26 +14,62 @@ class ToXYEffect(inkex.Effect):
     def __init__(self):
         # Call base class construtor.
         inkex.Effect.__init__(self)
-        self.OptionParser.add_option("--xmin",
-            action="store", type="float", 
-                dest="xmin", default=0.0,
-            help="x min (lower left corner)")
-        self.OptionParser.add_option("--ymin",
-            action="store", type="float", 
-                dest="ymin", default=0.0,
-            help="y min (lower left corner)")
-        self.OptionParser.add_option("--xmax",
-            action="store", type="float", 
-                dest="xmax", default=1.0,
-            help="x max (upper right corner)")
-        self.OptionParser.add_option("--ymax",
-            action="store", type="float", 
-                dest="ymax", default=1.0,
-            help="y max (upper right corner)")
-        self.OptionParser.add_option("--fontsize",
-            action="store", type="float", 
-                dest="fontSize", default=10.0,
-            help="Font size")
+        self.arg_parser.add_argument(
+            "--xmin",
+            action="store",
+            type=float,
+            dest="xmin",
+            default=0.0,
+            help="x min (lower left corner)",
+        )
+        self.arg_parser.add_argument(
+            "--ymin",
+            action="store",
+            type=float,
+            dest="ymin",
+            default=0.0,
+            help="y min (lower left corner)",
+        )
+        self.arg_parser.add_argument(
+            "--xmax",
+            action="store",
+            type=float,
+            dest="xmax",
+            default=1.0,
+            help="x max (upper right corner)",
+        )
+        self.arg_parser.add_argument(
+            "--ymax",
+            action="store",
+            type=float,
+            dest="ymax",
+            default=1.0,
+            help="y max (upper right corner)",
+        )
+        self.arg_parser.add_argument(
+            "--fontsize",
+            action="store",
+            type=float,
+            dest="fontSize",
+            default=8,
+            help="Font size",
+        )
+        self.arg_parser.add_argument(
+            "--write_output_file",
+            action="store",
+            type=bool,
+            dest="write_output_file",
+            default=False,
+            help="Write to output file",
+        )
+        self.arg_parser.add_argument(
+            "--output_file",
+            action="store",
+            type=pathlib.Path,
+            dest="output_file",
+            default=None,
+            help="Optional output file",
+        )
 
     """ Draw a rectangle """
     def draw_rect(self, x, y, w, h, parent):
@@ -46,13 +80,13 @@ class ToXYEffect(inkex.Effect):
                 'fill'          : 'none'
            }
             attribs = {
-                'style'     : simplestyle.formatStyle(style),
+                'style'     : str(inkex.Style(style)),
                 'height'    : str(h),
                 'width'     : str(w),
                 'x'         : str(x),
                 'y'         : str(y)
            }
-            inkex.etree.SubElement(parent, inkex.addNS('rect','svg'), attribs )
+            etree.SubElement(parent, inkex.addNS('rect','svg'), attribs )
 
     """ Write some text, breaking lines on \'\\n\' """
     def write_text(self, x, y, text, parent):
@@ -66,61 +100,55 @@ class ToXYEffect(inkex.Effect):
             'font-family':'Sans'
         }
         attribs = {
-            'style'     : simplestyle.formatStyle(style),
+            'style'     : str(inkex.Style(style)),
             'x'         : str(x),
             'y'         : str(y)
         }
-        textNode = inkex.etree.SubElement(parent, inkex.addNS('text','svg'), attribs )
+        textNode = etree.SubElement(parent, inkex.addNS('text','svg'), attribs )
         for line in text.split('\n'):
-                  tspan = inkex.etree.Element(inkex.addNS("tspan", "svg"))
+                  tspan = etree.Element(inkex.addNS("tspan", "svg"))
                   tspan.set(inkex.addNS("role","sodipodi"), "line")
                   tspan.text = line
                   textNode.append(tspan)
 
     """ Recursively extract paths. """
-    def extractPath(self,node,points,transformMatrix=None):
+    def extractPath(self,node,points,transform=None):
         pathString = node.get('d')
         if pathString:
             id = node.get('id')
-            path = cubicsuperpath.parsePath(node.get('d'))
-            if transformMatrix:
-                simpletransform.applyTransformToPath(transformMatrix,path)
+            path = inkex.paths.CubicSuperPath(node.get("d"))
+            transf = Transform(transform) * Transform(node.get("transform", None))
+            path = Path(path).transform(transf).to_superpath()
             # reflection on y axys to have y growing toward up direction of the graph
             points[id] = [point[1] for segment in path for point in segment]
             points[id] = [(x,-y) for (x,y) in points[id]]
-        elif node.tag==inkex.addNS('g','svg'):
-            innerTransform = node.get('transform')
-            innerTransformMatrix = simpletransform.parseTransform(innerTransform)
-            if innerTransformMatrix:
-                if(transformMatrix):
-                    transformMatrix = simpletransform.composeTransform(transformMatrix,innerTransformMatrix)
-                else:
-                    transformMatrix = innerTransformMatrix
+        elif node.tag == inkex.addNS("g", "svg"):
+            transf = Transform(transform) * Transform(node.get("transform", None))
             for child in node.iterchildren():
-                self.extractPath(child,points,transformMatrix)
+                self.extractPath(child, points, transf)
         else:
-            inkex.debug(node.tag)
+            inkex.utils.debug(node.tag)
 
     """ toXY effect. """
     def effect(self):
-        if len(self.selected)<1:
-            inkex.debug("This extension requires that you select at least one path.")
+        if len(self.svg.selected)<1:
+            inkex.utils.debug("This extension requires that you select at least one path.")
             return
 
         xrange = self.options.xmax-self.options.xmin
         yrange = self.options.ymax-self.options.ymin
         if xrange<=0 or yrange<=0:
-            inkex.debug("Negative ranges, check x-y min-max values.")
+            inkex.utils.debug("Negative ranges, check x-y min-max values.")
             return
 
         #gathering points from paths
         points = {}
         for id in self.options.ids:
-            node = self.selected[id]
+            node = self.svg.selected[id]
             self.extractPath(node,points)
 
         if not points:
-            inkex.debug("No paths found.")
+            inkex.utils.debug("No paths found.")
             return
 
         #boundaries
@@ -138,11 +166,19 @@ class ToXYEffect(inkex.Effect):
             table += "\n"
 
         #output
-        group = inkex.etree.SubElement(self.current_layer, inkex.addNS('g','svg'))
+        group = etree.SubElement(self.svg.get_current_layer(), inkex.addNS('g','svg'))
         self.draw_rect(xmin, -ymin-ydelta, xdelta, ydelta,group)
         self.write_text(xmin,-ymin+self.options.fontSize,"{0:4g},{1:4g}".format(self.options.xmin,self.options.ymin),group)
         self.write_text(xmin+xdelta, -ymin-ydelta,"{0:4g},{1:4g}".format(self.options.xmax,self.options.ymax),group)
         self.write_text(xmin, -ymin+self.options.fontSize*2.5, table,group)
 
+        # optionally write to external output file
+        if self.options.write_output_file:
+            try:
+                with open(self.options.output_file, "w") as f:
+                    f.write(table)
+            except OSError as e:
+                inkex.utils.debug(e)
+
 e = ToXYEffect()
-e.affect()
+e.run()
