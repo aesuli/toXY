@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import sys
+print(sys.path)
+
 import inkex
 import cubicsuperpath
 import simpletransform
@@ -35,7 +38,7 @@ class ToXYEffect(inkex.Effect):
             help="Font size")
 
     """ Draw a rectangle """
-    def draw_rect(self, (x,y), (w,h), parent):
+    def draw_rect(self, x, y, w, h, parent):
             style = {   
             'stroke'        : '#000000',
             'stroke-opacity' : '1',
@@ -52,7 +55,7 @@ class ToXYEffect(inkex.Effect):
             inkex.etree.SubElement(parent, inkex.addNS('rect','svg'), attribs )
 
     """ Write some text, breaking lines on \'\\n\' """
-    def write_text(self, (x,y), text, parent):
+    def write_text(self, x, y, text, parent):
         style = {   
         'font-size'    : self.options.fontSize,
         'font-style'    : 'normal',
@@ -67,7 +70,7 @@ class ToXYEffect(inkex.Effect):
             'x'         : str(x),
             'y'         : str(y)
         }
-            textNode = inkex.etree.SubElement(parent, inkex.addNS('text','svg'), attribs )
+        textNode = inkex.etree.SubElement(parent, inkex.addNS('text','svg'), attribs )
         for line in text.split('\n'):
                   tspan = inkex.etree.Element(inkex.addNS("tspan", "svg"))
                   tspan.set(inkex.addNS("role","sodipodi"), "line")
@@ -136,10 +139,10 @@ class ToXYEffect(inkex.Effect):
 
         #output
         group = inkex.etree.SubElement(self.current_layer, inkex.addNS('g','svg'))
-        self.draw_rect((xmin,-ymin-ydelta),(xdelta,ydelta),group)
-        self.write_text((xmin,-ymin+self.options.fontSize),"{0:4g},{1:4g}".format(self.options.xmin,self.options.ymin),group)
-        self.write_text((xmin+xdelta,-ymin-ydelta),"{0:4g},{1:4g}".format(self.options.xmax,self.options.ymax),group)
-        self.write_text((xmin,-ymin+self.options.fontSize*2.5 ),table,group)
+        self.draw_rect(xmin, -ymin-ydelta, xdelta, ydelta,group)
+        self.write_text(xmin,-ymin+self.options.fontSize,"{0:4g},{1:4g}".format(self.options.xmin,self.options.ymin),group)
+        self.write_text(xmin+xdelta, -ymin-ydelta,"{0:4g},{1:4g}".format(self.options.xmax,self.options.ymax),group)
+        self.write_text(xmin, -ymin+self.options.fontSize*2.5, table,group)
 
 e = ToXYEffect()
 e.affect()
