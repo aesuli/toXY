@@ -15,7 +15,7 @@ Always check if the returned values are sound with respect to what is reported i
 
 ## Installation
 
-I assume you already have Inkscape installed.
+I assume you already have Inkscape installed. This extension is compatible with Inkscape for version 1.0 and higher.
 
 Close Inkscape.
 Copy the two files (`toXY.inx` and `toXY.py`) into the extensions directory of Inkscape, which is usually located:
