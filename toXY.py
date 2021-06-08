@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+""" Inkscape extension that extracts XY coordinates of points defining selected paths. """
 
 import pathlib
 from lxml import etree
@@ -7,10 +8,10 @@ from inkex.transforms import Transform
 from inkex.paths import Path
 
 
-""" Inkscape extension that extracts XY coordinates of points defining selected paths. """
 class ToXYEffect(inkex.Effect):
 
-    """ Constructor. """
+    """Constructor."""
+
     def __init__(self):
         # Call base class construtor.
         inkex.Effect.__init__(self)
@@ -71,81 +72,79 @@ class ToXYEffect(inkex.Effect):
             help="Optional output file",
         )
 
-    """ Draw a rectangle """
     def draw_rect(self, x, y, w, h, parent):
-            style = {   
-            'stroke'        : '#000000',
-            'stroke-opacity' : '1',
-                'width'         : '1',
-                'fill'          : 'none'
-           }
-            attribs = {
-                'style'     : str(inkex.Style(style)),
-                'height'    : str(h),
-                'width'     : str(w),
-                'x'         : str(x),
-                'y'         : str(y)
-           }
-            etree.SubElement(parent, inkex.addNS('rect','svg'), attribs )
-
-    """ Write some text, breaking lines on \'\\n\' """
-    def write_text(self, x, y, text, parent):
-        style = {   
-        'font-size'    : self.options.fontSize,
-        'font-style'    : 'normal',
-        'font-weight'    : 'normal',
-        'fill'    : '#000000',
-        'fill-opacity' : '1',
-        'stroke' : 'none',
-            'font-family':'Sans'
+        """Draw a rectangle"""
+        style = {
+            "stroke": "#000000",
+            "stroke-opacity": "1",
+            "width": "1",
+            "fill": "none",
         }
         attribs = {
-            'style'     : str(inkex.Style(style)),
-            'x'         : str(x),
-            'y'         : str(y)
+            "style": str(inkex.Style(style)),
+            "height": str(h),
+            "width": str(w),
+            "x": str(x),
+            "y": str(y),
         }
-        textNode = etree.SubElement(parent, inkex.addNS('text','svg'), attribs )
-        for line in text.split('\n'):
-                  tspan = etree.Element(inkex.addNS("tspan", "svg"))
-                  tspan.set(inkex.addNS("role","sodipodi"), "line")
-                  tspan.text = line
-                  textNode.append(tspan)
+        etree.SubElement(parent, inkex.addNS("rect", "svg"), attribs)
 
-    """ Recursively extract paths. """
-    def extractPath(self,node,points,transform=None):
-        pathString = node.get('d')
+    def write_text(self, x, y, text, parent):
+        """Write some text, breaking lines on \'\\n\'"""
+        style = {
+            "font-size": self.options.fontSize,
+            "font-style": "normal",
+            "font-weight": "normal",
+            "fill": "#000000",
+            "fill-opacity": "1",
+            "stroke": "none",
+            "font-family": "Sans",
+        }
+        attribs = {"style": str(inkex.Style(style)), "x": str(x), "y": str(y)}
+        text_node = etree.SubElement(parent, inkex.addNS("text", "svg"), attribs)
+        for line in text.split("\n"):
+            tspan = etree.Element(inkex.addNS("tspan", "svg"))
+            tspan.set(inkex.addNS("role", "sodipodi"), "line")
+            tspan.text = line
+            text_node.append(tspan)
+
+    def extract_path(self, node, points, transform=None):
+        """Recursively extract paths."""
+        pathString = node.get("d")
         if pathString:
-            id = node.get('id')
+            id = node.get("id")
             path = inkex.paths.CubicSuperPath(node.get("d"))
             transf = Transform(transform) * Transform(node.get("transform", None))
             path = Path(path).transform(transf).to_superpath()
             # reflection on y axys to have y growing toward up direction of the graph
             points[id] = [point[1] for segment in path for point in segment]
-            points[id] = [(x,-y) for (x,y) in points[id]]
+            points[id] = [(x, -y) for (x, y) in points[id]]
         elif node.tag == inkex.addNS("g", "svg"):
             transf = Transform(transform) * Transform(node.get("transform", None))
             for child in node.iterchildren():
-                self.extractPath(child, points, transf)
+                self.extract_path(child, points, transf)
         else:
             inkex.utils.debug(node.tag)
 
-    """ toXY effect. """
     def effect(self):
-        if len(self.svg.selected)<1:
-            inkex.utils.debug("This extension requires that you select at least one path.")
+        """toXY effect."""
+        if len(self.svg.selected) < 1:
+            inkex.utils.debug(
+                "This extension requires that you select at least one path."
+            )
             return
 
-        xrange = self.options.xmax-self.options.xmin
-        yrange = self.options.ymax-self.options.ymin
-        if xrange<=0 or yrange<=0:
+        xrange = self.options.xmax - self.options.xmin
+        yrange = self.options.ymax - self.options.ymin
+        if xrange <= 0 or yrange <= 0:
             inkex.utils.debug("Negative ranges, check x-y min-max values.")
             return
 
-        #gathering points from paths
+        # gathering points from paths
         points = {}
         for id in self.options.ids:
             node = self.svg.selected[id]
-            self.extractPath(node,points)
+            self.extractPath(node, points)
 
         if not points:
             inkex.utils.debug("No paths found.")
@@ -155,13 +154,17 @@ class ToXYEffect(inkex.Effect):
         for path_id, coordinates in points.items():
             points[path_id] = set(coordinates)
 
-        #boundaries
+        # boundaries
         xmin = min([point[0] for pointset in points.values() for point in pointset])
         ymin = min([point[1] for pointset in points.values() for point in pointset])
 
-        xdelta = max([point[0] for pointset in points.values() for point in pointset])-xmin
-        ydelta = max([point[1] for pointset in points.values() for point in pointset])-ymin
-        
+        xdelta = (
+            max([point[0] for pointset in points.values() for point in pointset]) - xmin
+        )
+        ydelta = (
+            max([point[1] for pointset in points.values() for point in pointset]) - ymin
+        )
+
         # converting coordinates writing table
         table = "pathId idx x y\n"
         for id in list(points.keys()):
@@ -181,12 +184,22 @@ class ToXYEffect(inkex.Effect):
 
             table += "\n"
 
-        #output
-        group = etree.SubElement(self.svg.get_current_layer(), inkex.addNS('g','svg'))
-        self.draw_rect(xmin, -ymin-ydelta, xdelta, ydelta,group)
-        self.write_text(xmin,-ymin+self.options.fontSize,"{0:4g},{1:4g}".format(self.options.xmin,self.options.ymin),group)
-        self.write_text(xmin+xdelta, -ymin-ydelta,"{0:4g},{1:4g}".format(self.options.xmax,self.options.ymax),group)
-        self.write_text(xmin, -ymin+self.options.fontSize*2.5, table,group)
+        # output
+        group = etree.SubElement(self.svg.get_current_layer(), inkex.addNS("g", "svg"))
+        self.draw_rect(xmin, -ymin - ydelta, xdelta, ydelta, group)
+        self.write_text(
+            xmin,
+            -ymin + self.options.fontSize,
+            "{0:4g},{1:4g}".format(self.options.xmin, self.options.ymin),
+            group,
+        )
+        self.write_text(
+            xmin + xdelta,
+            -ymin - ydelta,
+            "{0:4g},{1:4g}".format(self.options.xmax, self.options.ymax),
+            group,
+        )
+        self.write_text(xmin, -ymin + self.options.fontSize * 2.5, table, group)
 
         # optionally write to external output file
         if self.options.write_output_file:
@@ -195,6 +208,7 @@ class ToXYEffect(inkex.Effect):
                     f.write(table)
             except OSError as e:
                 inkex.utils.debug(e)
+
 
 e = ToXYEffect()
 e.run()
