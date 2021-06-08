@@ -65,6 +65,8 @@ For example, I copied the data into Excel and, after a minor clean up, I have go
 
 ![](https://github.com/aesuli/toXY/blob/main/PdfConvert8.png?raw=true)
 
+Optionally you can also output the contents of the box to a file which uses the same formatting as the text box. 
+
 ## License
 
 Copyright 2021 Andrea Esuli <andrea@esuli.it>
