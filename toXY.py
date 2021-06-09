@@ -152,7 +152,11 @@ class ToXYEffect(inkex.Effect):
 
         # remove duplicate points
         for path_id, coordinates in points.items():
-            points[path_id] = set(coordinates)
+            dedup_coordinates = []
+            for coord in coordinates:
+                if len(dedup_coordinates)==0 or coord!=dedup_coordinates[-1]:
+                    dedup_coordinates.append(coord)
+            points[path_id] = dedup_coordinates
 
         # boundaries
         xmin = min([point[0] for pointset in points.values() for point in pointset])
