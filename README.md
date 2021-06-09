@@ -15,7 +15,7 @@ Always check if the returned values are sound with respect to what is reported i
 
 ## Installation
 
-I assume you already have Inkscape installed.
+I assume you already have Inkscape installed. This extension is compatible with Inkscape for version 1.0 and higher.
 
 Close Inkscape.
 Copy the two files (`toXY.inx` and `toXY.py`) into the extensions directory of Inkscape, which is usually located:
@@ -64,6 +64,8 @@ A very long text box will appear below the graph. Each line reports the X and Y 
 For example, I copied the data into Excel and, after a minor clean up, I have got back an exact replica of the graph.
 
 ![](https://github.com/aesuli/toXY/blob/main/PdfConvert8.png?raw=true)
+
+Optionally you can also output the contents of the box to a file which uses the same formatting as the text box. 
 
 ## License
 
