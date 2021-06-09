@@ -59,14 +59,16 @@ Click Apply.
 
 A very long text box will appear below the graph. Each line reports the X and Y coordinates of a point (adjusted to the lower and upper corner coordinates you entered) and to which curve it belongs. Copy and paste it wherever you like.
 
+If you set a filename in the plugin window, you can have the same output directly saved to a text file. 
+
 ![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert7.png?raw=true)
+
+
 ![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert7-2.png?raw=true)
 
-For example, I copied the data into Excel and, after a minor clean up, I have got back an exact replica of the graph.
+For example, I copied the data into a spreadsheet and, after a minor clean up, I have got back an exact replica of the graph.
 
 ![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert8.png?raw=true)
-
-Optionally you can also output the contents of the box to a file which uses the same formatting as the text box. 
 
 ## License
 
