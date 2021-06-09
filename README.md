@@ -37,33 +37,34 @@ Drag and drop the PDF file into Inkscape.
 
 In the "PDF Import Settings" dialog select the page that contains the graph to be converted, click OK.
 
-![](https://github.com/aesuli/toXY/blob/main/PdfConvert1.png?raw=true)
+![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert1.png?raw=true)
 
 Now the page is a group of objects in the drawing, select it, and repeatedly ungroup it (Ctrl+Shift+G), until you get the message _No groups to ungroup in the selection_ (see the lower part of the second image down here).
 
-![](https://github.com/aesuli/toXY/blob/main/PdfConvert2.png?raw=true)
-![](https://github.com/aesuli/toXY/blob/main/PdfConvert3.png?raw=true)
+![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert2.png?raw=true)
+![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert3.png?raw=true)
 
 Zoom (if needed) and select the curves you want to convert into numbers.
 
-![](https://github.com/aesuli/toXY/blob/main/PdfConvert4.png?raw=true)
+![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert4.png?raw=true)
 
 Run the toXY plugin from the Extensions, Generate from Path menus.
 
-![](https://github.com/aesuli/toXY/blob/main/PdfConvert5.png?raw=true)
+![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert5.png?raw=true)
 
 Set the proper values for the lower left corner and upper right corner to match the bounds of the curves you want to convert into numbers.
 Click Apply.
 
-![](https://github.com/aesuli/toXY/blob/main/PdfConvert6.png?raw=true)
+![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert6.png?raw=true)
 
 A very long text box will appear below the graph. Each line reports the X and Y coordinates of a point (adjusted to the lower and upper corner coordinates you entered) and to which curve it belongs. Copy and paste it wherever you like.
 
-![](https://github.com/aesuli/toXY/blob/main/PdfConvert7.png?raw=true)
+![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert7.png?raw=true)
+![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert7-2.png?raw=true)
 
 For example, I copied the data into Excel and, after a minor clean up, I have got back an exact replica of the graph.
 
-![](https://github.com/aesuli/toXY/blob/main/PdfConvert8.png?raw=true)
+![](https://github.com/aesuli/toXY/blob/main/images/PDFConvert8.png?raw=true)
 
 Optionally you can also output the contents of the box to a file which uses the same formatting as the text box. 
 
