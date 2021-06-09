@@ -19,7 +19,7 @@ I assume you already have Inkscape installed. This extension is compatible with 
 
 Close Inkscape.
 Copy the two files (`toXY.inx` and `toXY.py`) into the extensions directory of Inkscape, which is usually located:
- * on Windows: `C:\Program Files\Inkscape\share\extensions`
+ * on Windows: `%userprofile%\AppData\Roaming\inkscape\extensions` or `C:\Program Files\Inkscape\share\extensions`
  * on Linux: `/usr/share/inkscape/extensions`
  * on MacOS: `$HOME/.config/inkscape/extensions` or `/Applications/Inkscape.app/Contents/Resources/extensions`, depending on the OS version.
 
