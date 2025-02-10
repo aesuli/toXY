@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" Inkscape extension that extracts XY coordinates of points defining selected paths. """
+"""Inkscape extension that extracts XY coordinates of points defining selected paths."""
 
 import pathlib
 from lxml import etree
@@ -8,64 +8,53 @@ from inkex.transforms import Transform
 from inkex.paths import Path
 
 
-class ToXYEffect(inkex.Effect):
+class ToXYEffect(inkex.EffectExtension):
 
-    """Constructor."""
-
-    def __init__(self):
-        # Call base class construtor.
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument(
+    def add_arguments(self, pars):
+        pars.add_argument(
             "--xmin",
-            action="store",
             type=float,
             dest="xmin",
             default=0.0,
             help="x min (lower left corner)",
         )
-        self.arg_parser.add_argument(
+        pars.add_argument(
             "--ymin",
-            action="store",
             type=float,
             dest="ymin",
             default=0.0,
             help="y min (lower left corner)",
         )
-        self.arg_parser.add_argument(
+        pars.add_argument(
             "--xmax",
-            action="store",
             type=float,
             dest="xmax",
             default=1.0,
             help="x max (upper right corner)",
         )
-        self.arg_parser.add_argument(
+        pars.add_argument(
             "--ymax",
-            action="store",
             type=float,
             dest="ymax",
             default=1.0,
             help="y max (upper right corner)",
         )
-        self.arg_parser.add_argument(
+        pars.add_argument(
             "--fontsize",
-            action="store",
             type=float,
             dest="fontSize",
             default=8,
             help="Font size",
         )
-        self.arg_parser.add_argument(
+        pars.add_argument(
             "--write_output_file",
-            action="store",
             type=bool,
             dest="write_output_file",
             default=False,
             help="Write to output file",
         )
-        self.arg_parser.add_argument(
+        pars.add_argument(
             "--output_file",
-            action="store",
             type=pathlib.Path,
             dest="output_file",
             default=None,
@@ -114,13 +103,13 @@ class ToXYEffect(inkex.Effect):
         if pathString:
             id = node.get("id")
             path = inkex.paths.CubicSuperPath(node.get("d"))
-            transf = Transform(transform) * Transform(node.get("transform", None))
+            transf = Transform(transform) @ Transform(node.get("transform", None))
             path = Path(path).transform(transf).to_superpath()
             # reflection on y axys to have y growing toward up direction of the graph
             points[id] = [point[1] for segment in path for point in segment]
             points[id] = [(x, -y) for (x, y) in points[id]]
         elif node.tag == inkex.addNS("g", "svg"):
-            transf = Transform(transform) * Transform(node.get("transform", None))
+            transf = Transform(transform) @ Transform(node.get("transform", None))
             for child in node.iterchildren():
                 self.extract_path(child, points, transf)
         else:
@@ -129,9 +118,7 @@ class ToXYEffect(inkex.Effect):
     def effect(self):
         """toXY effect."""
         if len(self.svg.selected) < 1:
-            inkex.utils.debug(
-                "This extension requires that you select at least one path."
-            )
+            inkex.utils.debug("This extension requires that you select at least one path.")
             return
 
         xrange = self.options.xmax - self.options.xmin
@@ -154,7 +141,7 @@ class ToXYEffect(inkex.Effect):
         for path_id, coordinates in points.items():
             dedup_coordinates = []
             for coord in coordinates:
-                if len(dedup_coordinates)==0 or coord!=dedup_coordinates[-1]:
+                if len(dedup_coordinates) == 0 or coord != dedup_coordinates[-1]:
                     dedup_coordinates.append(coord)
             points[path_id] = dedup_coordinates
 
@@ -162,12 +149,8 @@ class ToXYEffect(inkex.Effect):
         xmin = min([point[0] for pointset in points.values() for point in pointset])
         ymin = min([point[1] for pointset in points.values() for point in pointset])
 
-        xdelta = (
-            max([point[0] for pointset in points.values() for point in pointset]) - xmin
-        )
-        ydelta = (
-            max([point[1] for pointset in points.values() for point in pointset]) - ymin
-        )
+        xdelta = max([point[0] for pointset in points.values() for point in pointset]) - xmin
+        ydelta = max([point[1] for pointset in points.values() for point in pointset]) - ymin
 
         # converting coordinates writing table
         table = "pathId idx x y\n"
@@ -179,9 +162,7 @@ class ToXYEffect(inkex.Effect):
                 )
                 for (x, y) in points[id]
             ]
-            table += "\n".join(
-                [f"{id} {idx} {x:4g} {y:4g}" for idx, (x, y) in enumerate(points[id])]
-            )
+            table += "\n".join([f"{id} {idx} {x:4g} {y:4g}" for idx, (x, y) in enumerate(points[id])])
             center_x = sum(x for (x, y) in points[id]) / len(points[id])
             center_y = sum(y for (x, y) in points[id]) / len(points[id])
             table += f"\n{id} center {center_x:4g} {center_y:4g}"
@@ -214,5 +195,6 @@ class ToXYEffect(inkex.Effect):
                 inkex.utils.debug(e)
 
 
-e = ToXYEffect()
-e.run()
+if __name__ == "__main__":
+    e = ToXYEffect()
+    e.run()
