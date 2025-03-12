@@ -11,7 +11,7 @@
   <param name="fontsize" type="int" min="1" max="1000" _gui-text="font size">10</param>
   <separator/>
   <param name="write_output_file" type="boolean" gui-text="Write to output file?">false</param>
-  <param type="path" name="output_file" gui-text="output file path" mode="file_new" [filetypes="$filetypes"]/>
+  <param type="path" name="output_file" gui-text="output file path" mode="file_new"/>
   <effect>
     <effects-menu>
       <submenu name="Generate from Path"/>
