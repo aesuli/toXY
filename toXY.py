@@ -48,7 +48,7 @@ class ToXYEffect(inkex.EffectExtension):
         )
         pars.add_argument(
             "--write_output_file",
-            type=bool,
+            type=inkex.Boolean,
             dest="write_output_file",
             default=False,
             help="Write to output file",
