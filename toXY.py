@@ -163,10 +163,6 @@ class ToXYEffect(inkex.EffectExtension):
                 for (x, y) in points[id]
             ]
             table += "\n".join([f"{id} {idx} {x:4g} {y:4g}" for idx, (x, y) in enumerate(points[id])])
-            center_x = sum(x for (x, y) in points[id]) / len(points[id])
-            center_y = sum(y for (x, y) in points[id]) / len(points[id])
-            table += f"\n{id} center {center_x:4g} {center_y:4g}"
-
             table += "\n"
 
         # output

@@ -15,9 +15,22 @@ Always check if the returned values are sound with respect to what is reported i
 
 ## Installation
 
-I assume you already have Inkscape installed. This extension is compatible with Inkscape for version 1.0 and higher.
+I assume you already have Inkscape installed. This extension is compatible with Inkscape for version 1.3 and higher. For Inkscape 1.2 refer to [this version of the code](https://github.com/aesuli/toXY/tree/inkscape_v1.2)
 
-Close Inkscape.
+### Installation from Inkscape
+
+This is the preferred way to install the extension.
+
+Download the latest release from GitHub as a zip file.
+
+Open Inkscape, select "Extensions" on the menu bar, and the "Manage Extensions".
+Select the "Install Packages" tab, and then the button with the image of a folder.
+Select the zip file you downloaded, and click "Open".
+Close the "Extensions" window and restart Inkscape to conclude the installation.
+
+### Manual installation
+
+Close Inkscape if it is running.
 Copy the two files (`toXY.inx` and `toXY.py`) into the extensions directory of Inkscape, which is usually located:
  * on Windows: `%userprofile%\AppData\Roaming\inkscape\extensions` or `C:\Program Files\Inkscape\share\extensions`
  * on Linux: `/usr/share/inkscape/extensions`
@@ -72,14 +85,4 @@ For example, I copied the data into a spreadsheet and, after a minor clean up, I
 
 ## License
 
-Copyright 2021 Andrea Esuli <andrea@esuli.it>
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-
-3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+See the [license file](COPYING).
