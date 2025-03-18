@@ -1,24 +1,23 @@
-<inkscape-extension>
-  <_name>toXY</_name>
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <name>toXY</name>
   <id>org.ekips.filter.toXY</id>
-  <dependency type="executable" location="extensions">toXY.py</dependency>
-  <dependency type="executable" location="extensions">inkex.py</dependency>
+  <dependency type="executable" location="inx">toXY.py</dependency>  
   <param name="title" type="description">This effect converts the nodes of a path into XY coordinates. Useful to extract number values out of graphs.</param>
   <param name="xmin" type="float" min="-1e+37" max="1e+37" precision="4" _gui-text="x min (lower left corner)">0.0</param>  
   <param name="ymin" type="float" min="-1e+37" max="1e+37" precision="4" _gui-text="y min (lower left corner)">0.0</param>  
   <param name="xmax" type="float" min="-1e+37" max="1e+37" precision="4" _gui-text="x max (upper right corner)">1.0</param>  
   <param name="ymax" type="float" min="-1e+37" max="1e+37" precision="4" _gui-text="y max (upper right corner)">1.0</param>  
   <param name="fontsize" type="int" min="1" max="1000" _gui-text="font size">10</param>
-  <separator />
+  <separator/>
   <param name="write_output_file" type="boolean" gui-text="Write to output file?">false</param>
-  <param type="path" name="output_file" gui-text="output file path" mode="file_new" [filetypes="$filetypes"]/>
-<effect>
-    <object-type>path</object-type>
+  <param type="path" name="output_file" gui-text="output file path" mode="file_new"/>
+  <effect>
     <effects-menu>
-       <submenu _name="Generate from Path"/>
+      <submenu name="Generate from Path"/>
     </effects-menu>
   </effect>
   <script>
-    <command reldir="extensions" interpreter="python">toXY.py</command>
+    <command location="inx" interpreter="python">toXY.py</command>
   </script>
 </inkscape-extension>
